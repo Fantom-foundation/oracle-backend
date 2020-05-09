@@ -1,0 +1,23 @@
+{
+  "name": "oracle",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "cron": "^1.8.2",
+    "debug": "~2.6.9",
+    "ejs": "^3.1.2",
+    "express": "^4.16.4",
+    "http-errors": "~1.6.3",
+    "lowdb": "^1.0.0",
+    "morgan": "~1.9.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-engine": "^4.5.1",
+    "react-router": "^5.1.2",
+    "valid-url": "^1.0.9"
+  }
+}

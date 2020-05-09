@@ -1,0 +1,21 @@
+{
+    "currencySched": {
+        "currencyPairs": [ "USD/ETH", "EUR/ETH", "BTC/ETH" ],
+        "sources": [
+            {
+                "name": "test api 1",
+                "path": "localhost:3030",
+                "requestPattern": {
+                    "reqType": "GET",
+                    "endpointPattern": "/currencies/%currency1%/%currency2%"
+                }
+            },
+            
+            {
+                "name": "test api 2",
+                "path": "localhost:3033",
+                "excludePairs": ["BTC/ETH"]
+            }
+        ]
+    }
+}
