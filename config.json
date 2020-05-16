@@ -1,13 +1,39 @@
 {
     "currencySched": {
-        "currencyPairs": [ "USD/ETH", "EUR/ETH", "BTC/ETH" ],
+        "currencies": [ "ETH", "EUR", "BTC" ],
         "sources": [
             {
                 "name": "test api 1",
-                "path": "localhost:3030",
+                "entryPoint": "localhost:3030",
                 "requestPattern": {
-                    "reqType": "GET",
-                    "endpointPattern": "/currencies/%currency1%/%currency2%"
+                    "method": "GET",
+                    "endpointPattern": "/currencies/%currency%",
+                    "header": {"apiKey": ""},
+                    "body": {}
+                },
+                "responsePattern": {
+
+                }
+            },
+            {
+                "name": "coin market cap",
+                "entryPoint": "https://pro-api.coinmarketcap.com",
+                "requestPattern": {
+                    "method": "GET",
+                    "endpointPattern": "/v1/cryptocurrency/listings/latest",
+                    "qs": {
+                        "start": "1",
+                        "limit": "5000",
+                        "convert": "%currency1%"
+                      },
+                      "headers": {
+                        "X-CMC_PRO_API_KEY": "b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c"
+                      },
+                      "json": true,
+                      "gzip": true
+                },
+                "responsePattern": {
+
                 }
             },
             

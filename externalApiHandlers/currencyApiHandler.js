@@ -1,4 +1,6 @@
 var validUrl = require('valid-url');
+const request = require('request-promise')
+
 // "sources": [
 //     {
 //         "name": "test api 1",
@@ -10,6 +12,7 @@ var validUrl = require('valid-url');
 //     },
 
 var availableApiMethods = ["GET", "POST", "PUT"];
+var currencyPairs = [];
 
 function isAvailableMethod(methodName) {
     for (var i = 0; i < availableApiMethods.length; i++) {
@@ -29,8 +32,8 @@ function validateJsonDescription(jsonDescription) {
     if (!jsonDescription.path || jsonDescription.path == "")
         throwCannotBeEmpty("path");
 
-    if (!validUrl.isHttpsUri(jsonDescription.path))
-        throw `${jsonDescription.path} is not a valid https uri`
+    if (!validUrl.isHttpsUri(normalizeUri(jsonDescription.entryPoint)))
+        throw `${jsonDescription.uri} is not a valid https uri`
 
     if (!jsonDescription.requestPattern)
         throwCannotBeEmpty("requestPattern");
@@ -38,27 +41,69 @@ function validateJsonDescription(jsonDescription) {
     if (!jsonDescription.requestPattern.reqType)
         throwCannotBeEmpty("requestPattern reqType");
 
-    if (!isAvailableMethod(jsonDescription.requestPattern.reqType)) 
-        throw `request type is not available. ensure that your req type is one of ${availableApiMethods}`
+    if (!isAvailableMethod(jsonDescription.requestPattern.method)) 
+        throw `request type is not available. ensure that your request method is one of ${availableApiMethods}`
     
     if (!jsonDescription.requestPattern.endpointPattern)
         throwCannotBeEmpty("requestPattern endpointPattern");
-    
+}
+
+function validatePriceRequest(currency1, currency2) {
+    let firstIdx = currencyPairs.indexOf(currency1);
+    if (firstIdx < 0)
+        throw `currency ${currency1} is not available for request.\nPairs available for request: ${currencyPairs}`;
+
+    let secondIdx = currencyPairs.indexOf(currency2);
+    if (secondIdx < 0)
+        throw `currency ${currency2} is not available for request.\nPairs available for request: ${currencyPairs}`;
+}
+
+function normalizeUri(uri) {
+    const httpsPrefix = "https:\\\\";
+    if (uri.startsWith(httpsPrefix))
+        return uri;
+    return httpsPrefix + uri;
 }
 
 function throwCannotBeEmpty(emptyVar) {
     throw `json description ${emptyVar} cannot be empty`;
 }
 
+function setAvailablePairs(pairArr) {
+    currencyPairs = pairArr;
+}
+
+function createEndpoint(entryPoint, pattern, currency1, currency2) {
+    
+}
+
 class CurrencyApiHandler {
     constructor(jsonDescription) {        
         validateJsonDescription(jsonDescription);
         this.name = jsonDescription.name;
-        this.path = jsonDescription.path;
+        this.entryPoint = normalizeUri(jsonDescription.entryPoint);
         this.requestPattern = jsonDescription.requestPattern;
     }
 
-    getPrice() {
+    async getPrice(currency1, currency2) {
+        validatePriceRequest(currency1, currency2);
+
+        request(options)
+            .then(function (response) {
+                // Запрос был успешным, используйте объект ответа как хотите
+            })
+            .catch(function (err) {
+                // Произошло что-то плохое, обработка ошибки
+            })
+    }
+
+    makeRequestFromPattern(currency1, currency2) {
+        let uri; 
+        let endPoint = this.entryPoint;
         
+        const options = {
+            method: this.requestPattern.method,
+            uri: 'https://risingstack.com'
+        }
     }
 }
