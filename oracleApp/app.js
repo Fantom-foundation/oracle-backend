@@ -5,6 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var scedule = require('./scheduler/scheduleHandler');
+var oracleContractHandler = require('../contractHandler/oracleContractHandler');
 
 var indexRouter = require('./routes/index');
 
@@ -42,6 +43,6 @@ app.use(function(err, req, res, next) {
   res.write(err.toString());
   res.end();
 });
-
-scedule();
+var oracleContract = new oracleContractHandler();
+scedule(oracleContract);
 module.exports = app;

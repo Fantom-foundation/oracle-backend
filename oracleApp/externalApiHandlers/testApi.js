@@ -2,7 +2,10 @@ const request = require('request-promise');
 var config = require('../config');
 
 
-const tokenPrices = [ { "SYMB": "10000" } ]
+const tokenPrices = [ { 
+  pairName = "SYMB1/SYMB2",
+  price = "10000" 
+} ]
 
 class CoinMarketCap {
     constructor(options, currencies) {
