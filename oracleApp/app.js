@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var scedule = require('./scheduler/scheduleHandler');
-var oracleContractHandler = require('../contractHandler/oracleContractHandler');
+var oracleContractHandler = require('./contractHandler/oracleContractHandler');
 
 var indexRouter = require('./routes/index');
 

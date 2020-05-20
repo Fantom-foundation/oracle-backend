@@ -9,10 +9,10 @@ class ContractHandler {
         this.endpointWs = `ws://${config.oracleContract.defaultHost}:${config.oracleContract.defaultPortWs}`;
         this.endpointRpc = `ws://${config.oracleContract.defaultHost}:${config.oracleContract.defaultPortRpc}`;
         this.contractAddress = config.oracleContract.contractAddress;
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider(this.endpoint));
+        this.web3 = new Web3(new Web3.providers.WebsocketProvider(this.endpointWs));
         this._oracle = new this.web3.eth.Contract(oracleAbi, this.contractAddress); // abi
         this.transactions = new TransactionHandler(this.web3, this._oracle, this.contractAddress, this.txStorage);
-        this.eventsHandler = new EventsHandler(this.web3);
+        this.eventsHandler = new EventsHandler(this.web3, this._oracle);
     }
 
     async updatePairPrice(pair1, pair2, price) {
@@ -20,7 +20,9 @@ class ContractHandler {
     }
 
     async handlePriceUpdateRequest(func) {
-        this.eventsHandler(func, "UpdatePriceForPair");
+        console.log("this._oracle", this._oracle);
+        this.eventsHandler.handleEvent(func, "UpdatePriceForPair");
+        await this._oracle.methods.requestPairUpdate("asd", "bsd");
     }
 }
 

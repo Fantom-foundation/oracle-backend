@@ -3,41 +3,39 @@ var config = require('../config');
 
 
 const tokenPrices = [ { 
-  pairName = "SYMB1/SYMB2",
-  price = "10000" 
+  pairName: "SYMB1/SYMB2",
+  price: "10000" 
 } ]
 
-class CoinMarketCap {
-    constructor(options, currencies) {
-        this.name = options.name;
-        this.currencies = currencies;
-        this.currenciesStr = currencies.join(",");
-        this.apiKey = options.apiKey;
-        
-    }
+class TestApi {
+  constructor(options, ignorePairs) {
+      this.name = options.name;
+      this.ignorePairs = ignorePairs;
+      this.apiKey = options.apiKey;      
+  }
 
-    updatePrices() {
-        let reqOpts = {
-            method: 'GET',
-            uri: 'https://localhost:9991',
-            body: {
-              'pair': "BTC/USD"
-            },
-            json: true,
-            gzip: true
-        };
+  updatePrices() {
+    let reqOpts = {
+      method: 'GET',
+      uri: 'http://localhost:9991',
+      body: {
+        'pair': "BTC/USD"
+      },
+      json: true,
+      gzip: true
+    };
 
-        rp(options)
-          .then(function (res) {
-          console.log(res);
-        }).catch(function (err) {
-          console.log(err);
-        });
-    }
+    request(reqOpts)
+      .then(function (res) {
+      console.log(res);
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
 
-    getPrices() {
-      return tokenPrices;
-    }
+  getPrices() {
+    return tokenPrices;
+  }
 }
 
-module.exports = CoinMarketCap;
+module.exports = TestApi;
