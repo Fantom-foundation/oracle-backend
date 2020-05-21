@@ -2,20 +2,21 @@ const config = require("../config");
 
 
 class TransactionHandler {
-    constructor(web3, oracle, contractAddr) {
+    constructor(web3, oracle) {
         this.web3 = web3;
         this.oracle = oracle;
-        this.contractAddr = contractAddr;
-        this.from = config.address;
+        this.contractAddr = oracle.options.address;
+        this.account = config.oracleContract.sender.keyObject;
+        this.account.privateKey = config.oracleContract.sender.privateKey;
         // this.txStorage = txStorage;
     }
 
-    proposePriceForPair(pair1, pair2, price) {
+    proposePriceForPair(symb1, symb2, price) {
         return this.newSignedTx({
-            from: from,
+            accountFrom: this.account,
             to: this.contractAddr,
             value: "0",
-            memo: this.oracle.methods.proposePriceForPair(pair1, pair2, price).encodeABI(),
+            memo: this.oracle.methods.proposePriceForPair(symb1, symb2, price).encodeABI(),
             gasLimit: 200000,
             web3Delegate: this.web3
         });
@@ -59,13 +60,21 @@ class TransactionHandler {
         rawTx.gasLimit = this.web3.utils.toHex(estimatedGas);
         
         let tx = await this.web3.eth.accounts.signTransaction(rawTx, accountFrom.privateKey);
-        return this.web3.eth.sendSignedTransaction(tx.rawTransaction, function(err, hash) {
-            if (err) 
-                throw(err);
-            
-            if (!turnLogsOff) 
-                console.log("tx sendSignedTransaction hash:", hash);
-        });
+        let hash;
+        try {
+            await this.web3.eth.sendSignedTransaction(tx.rawTransaction, function(err, txHash) {
+                if (err) 
+                    console.log("transaction error:", err);
+                
+                if (!turnLogsOff) 
+                    console.log("tx sendSignedTransaction hash:", txHash);
+                hash = txHash;
+            });
+        } 
+        catch (exception) {
+            console.log("exception was thrown:", exception);
+        }
+        return hash;
     };
 
 }

@@ -9,17 +9,17 @@ class eventsHandler {
     }
 
     handleEvent(func, eventName) {
-        this.subscribeLogEvent(this.contract, eventName);
+        this.subscribeLogEvent(this.contract, eventName, func);
     }
 
-    subscribeLogEvent (contract, eventName) {
+    subscribeLogEvent (contract, eventName, handleEventFunc) {
         const eventJsonInterface = this.web3.utils._.find(
           contract._jsonInterface,
           o => o.name === eventName && o.type === 'event',
         )
         const subscription = this.web3.eth.subscribe('logs', {
           address: contract.options.address,
-          topics: ["0xb8e4756f51efc66e127cb3dee0c4bffd693c2d7ebaf4abe786ab62d2b1fbc1d6"]
+          topics: [eventJsonInterface.signature]
         }, (error, result) => {
           if (!error) {
             const eventObj = this.web3.eth.abi.decodeLog(
@@ -27,14 +27,11 @@ class eventsHandler {
               result.data,
               result.topics.slice(1)
             )
-            console.log(`New ${eventName}!`, eventObj);
+            console.log(`New ${eventName}:`, eventObj);
+            handleEventFunc(eventObj.symb1, eventObj.symb2);
             return;
           }
           console.log(`event error: ${error}`);
-        }).on("data", function(transaction){
-            console.log("data tx:", transaction);
-        }).on("changed", function(transaction){
-            console.log("changed tx:", transaction);
         });
         if (!this.subscribedEvents[eventName] || this.subscribedEvents[eventName].length == 0) {
             this.subscribedEvents[eventName] = [ subscription ];

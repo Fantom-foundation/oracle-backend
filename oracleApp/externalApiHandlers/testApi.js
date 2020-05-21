@@ -2,10 +2,8 @@ const request = require('request-promise');
 var config = require('../config');
 
 
-const tokenPrices = [ { 
-  pairName: "SYMB1/SYMB2",
-  price: "10000" 
-} ]
+const tokenPrices = new Map();
+tokenPrices.set("SYMB1/SYMB2", "10000");
 
 class TestApi {
   constructor(options, ignorePairs) {
@@ -15,11 +13,15 @@ class TestApi {
   }
 
   updatePrices() {
+    let tokPairs = [];
+    for (const key of tokenPrices.keys()) {
+      tokPairs.push(key);
+    }
     let reqOpts = {
       method: 'GET',
       uri: 'http://localhost:9991',
       body: {
-        'pair': "BTC/USD"
+        'pairs': tokPairs.join("")
       },
       json: true,
       gzip: true
@@ -33,8 +35,20 @@ class TestApi {
     });
   }
 
+  addSymb() {
+
+  }
+
   getPrices() {
     return tokenPrices;
+  }
+
+  getPairPrice(symb1, symb2) {
+    let pair = symb1 + "/" + symb2;
+    let price = tokenPrices[pair];
+    if (!price)
+      return 0;
+    return price;
   }
 }
 
