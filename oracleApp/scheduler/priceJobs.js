@@ -27,13 +27,13 @@ function allPricesJob() {
 
 function getPriceForPair(symb1, symb2) {
     const pair = [`${symb1}/${symb2}`];
-    let price;
+    let prices = [];
     sources.forEach(source => {
         source.updatePrices(pair);
-        price = source.getPairPrice(pair);
+        prices.push(source.getPairPrice(pair));
     });
-    if (price)
-        return price;
+    if (prices.length > 0)
+        return prices[prices.length / 2];
     return 0;
 }
 
