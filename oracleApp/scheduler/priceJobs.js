@@ -1,3 +1,4 @@
+const request = require('request-promise');
 const testApiHandler = require('../externalApiHandlers/testApi');
 const config = require('../config');
 
@@ -7,7 +8,7 @@ const sources = [];
 const pairs = new Map();
 config.currencySched.sources.forEach(source => {
     if (source.name == 'test_api') {
-        let testApi = new testApiHandler(source);
+        let testApi = new testApiHandler(source, [], request);
         sources.push(testApi);
     }
 });
@@ -30,10 +31,10 @@ function getPriceForPair(symb1, symb2) {
     let prices = [];
     sources.forEach(source => {
         source.updatePrices(pair);
-        prices.push(source.getPairPrice(pair));
+        prices.push(source.getPairPrice(symb1, symb2));
     });
     if (prices.length > 0)
-        return prices[prices.length / 2];
+        return prices[Math.floor(prices.length / 2)];
     return 0;
 }
 
@@ -50,7 +51,7 @@ function pricesToMedians(pricesMap) {
     let mapOfMedians = new Map();
     for (let key of pricesMap.keys()) {
         price = pricesMap.get(key);
-        if (!price.length || price.length < 1 ||  typeof(price) == "string") {
+        if (!price.length || price.length < 1 || typeof (price) == "string") {
             mapOfMedians.set(key, price);
             continue;
         }
@@ -62,7 +63,7 @@ function pricesToMedians(pricesMap) {
             if (a.name < b.name) {
                 return -1;
             }
-              // a должно быть равным b
+            // a должно быть равным b
             return 0;
         })
         let median = pricesMap[key][pricesMap.length / 2];
@@ -71,7 +72,8 @@ function pricesToMedians(pricesMap) {
     return mapOfMedians;
 }
 
-module.exports = { 
-    allPricesJob: allPricesJob,
-    getPriceForPair: getPriceForPair
+module.exports = {
+    sources,
+    allPricesJob,
+    getPriceForPair
 };

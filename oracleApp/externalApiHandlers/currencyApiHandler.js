@@ -33,7 +33,7 @@ function validateJsonDescription(jsonDescription) {
         throwCannotBeEmpty("path");
 
     if (!validUrl.isHttpsUri(normalizeUri(jsonDescription.entryPoint)))
-        throw `${jsonDescription.uri} is not a valid https uri`
+        throw new Error(`${jsonDescription.entryPoint} is not a valid https uri`);
 
     if (!jsonDescription.requestPattern)
         throwCannotBeEmpty("requestPattern");
@@ -41,9 +41,9 @@ function validateJsonDescription(jsonDescription) {
     if (!jsonDescription.requestPattern.reqType)
         throwCannotBeEmpty("requestPattern reqType");
 
-    if (!isAvailableMethod(jsonDescription.requestPattern.method)) 
-        throw `request type is not available. ensure that your request method is one of ${availableApiMethods}`
-    
+    if (!isAvailableMethod(jsonDescription.requestPattern.method))
+        throw new Error(`request type is not available. ensure that your request method is one of ${availableApiMethods}`);
+
     if (!jsonDescription.requestPattern.endpointPattern)
         throwCannotBeEmpty("requestPattern endpointPattern");
 }
@@ -51,22 +51,22 @@ function validateJsonDescription(jsonDescription) {
 function validatePriceRequest(currency1, currency2) {
     let firstIdx = currencyPairs.indexOf(currency1);
     if (firstIdx < 0)
-        throw `currency ${currency1} is not available for request.\nPairs available for request: ${currencyPairs}`;
+        throw new Error(`currency ${currency1} is not available for request.\nPairs available for request: ${currencyPairs}`);
 
     let secondIdx = currencyPairs.indexOf(currency2);
     if (secondIdx < 0)
-        throw `currency ${currency2} is not available for request.\nPairs available for request: ${currencyPairs}`;
+        throw new Error(`currency ${currency2} is not available for request.\nPairs available for request: ${currencyPairs}`);
 }
 
 function normalizeUri(uri) {
-    const httpsPrefix = "https:\\\\";
+    const httpsPrefix = "https://";
     if (uri.startsWith(httpsPrefix))
         return uri;
     return httpsPrefix + uri;
 }
 
 function throwCannotBeEmpty(emptyVar) {
-    throw `json description ${emptyVar} cannot be empty`;
+    throw new Error(`json description ${emptyVar} cannot be empty`);
 }
 
 function setAvailablePairs(pairArr) {
@@ -74,11 +74,11 @@ function setAvailablePairs(pairArr) {
 }
 
 function createEndpoint(entryPoint, pattern, currency1, currency2) {
-    
+
 }
 
 class CurrencyApiHandler {
-    constructor(jsonDescription) {        
+    constructor(jsonDescription) {
         validateJsonDescription(jsonDescription);
         this.name = jsonDescription.name;
         this.entryPoint = normalizeUri(jsonDescription.entryPoint);
@@ -98,12 +98,18 @@ class CurrencyApiHandler {
     }
 
     makeRequestFromPattern(currency1, currency2) {
-        let uri; 
+        let uri;
         let endPoint = this.entryPoint;
-        
+
         const options = {
             method: this.requestPattern.method,
             uri: 'https://risingstack.com'
         }
     }
+}
+
+module.exports = {
+    setAvailablePairs: setAvailablePairs,
+    validateJsonDescription: validateJsonDescription,
+    validatePriceRequest: validatePriceRequest,
 }

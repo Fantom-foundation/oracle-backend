@@ -1,4 +1,3 @@
-const request = require('request-promise');
 var config = require('../config');
 
 
@@ -6,10 +5,11 @@ const tokenPrices = new Map();
 tokenPrices.set("SYMB1/SYMB2", "10000");
 
 class TestApi {
-  constructor(options, ignorePairs) {
+  constructor(options, ignorePairs, requester) {
+      this.requester = requester;
       this.name = options.name;
       this.ignorePairs = ignorePairs;
-      this.apiKey = options.apiKey;      
+      this.apiKey = options.apiKey;
   }
 
   updatePrices() {
@@ -27,7 +27,12 @@ class TestApi {
       gzip: true
     };
 
-    request(reqOpts)
+    if (!this.requester){
+      console.log(`TestApi.requester is empty`);
+      return;
+    }
+
+    this.requester(reqOpts)
       .then(function (res) {
       console.log(res);
     }).catch(function (err) {
@@ -45,7 +50,7 @@ class TestApi {
 
   getPairPrice(symb1, symb2) {
     let pair = symb1 + "/" + symb2;
-    let price = tokenPrices[pair];
+    let price = tokenPrices.get(pair);
     if (!price)
       return 0;
     return price;

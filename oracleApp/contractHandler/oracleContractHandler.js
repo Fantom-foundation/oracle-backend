@@ -5,11 +5,11 @@ const TransactionHandler = require('./transactionsHandler');
 const EventsHandler = require('./eventsHandler');
 
 class ContractHandler {
-    constructor() {
+    constructor(web3) {
         this.endpointWs = `ws://${config.oracleContract.defaultHost}:${config.oracleContract.defaultPortWs}`;
         this.endpointRpc = `ws://${config.oracleContract.defaultHost}:${config.oracleContract.defaultPortRpc}`;
         this.contractAddress = config.oracleContract.contractAddress;
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider(this.endpointWs));
+        this.web3 = (web3) ? web3: new Web3(new Web3.providers.WebsocketProvider(this.endpointWs));
         this._oracle = new this.web3.eth.Contract(oracleAbi, this.contractAddress); // abi
         this.transactions = new TransactionHandler(this.web3, this._oracle);
         this.eventsHandler = new EventsHandler(this.web3, this._oracle);

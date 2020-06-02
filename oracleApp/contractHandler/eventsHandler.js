@@ -33,6 +33,10 @@ class eventsHandler {
           }
           console.log(`event error: ${error}`);
         });
+        if (!subscription) {
+          return;
+        }
+
         if (!this.subscribedEvents[eventName] || this.subscribedEvents[eventName].length == 0) {
             this.subscribedEvents[eventName] = [ subscription ];
         } else {
