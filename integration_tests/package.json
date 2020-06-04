@@ -1,0 +1,26 @@
+{
+    "name": "integration_tests",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node integration-test.js"
+    },
+    "devDependencies": {
+        "mocha": "^3.2.0"
+    },
+    "dependencies": {
+        "axios": "^0.19.2",
+        "commander": "^5.1.0",
+        "debug": "~2.6.9",
+        "ejs": "^3.1.2",
+        "ethereumjs-util": "^6.2.0",
+        "keythereum-pure-js": "^1.1.7",
+        "morgan": "~1.9.1",
+        "nyc": "^15.1.0",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.5",
+        "valid-url": "^1.0.9",
+        "web3": "^1.2.7",
+        "web3-utils": "^1.2.1"
+    }
+}
