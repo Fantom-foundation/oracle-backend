@@ -52,6 +52,7 @@ class TransactionHandler {
             to,
             value: this.web3.utils.toHex(this.web3.utils.toWei(value, 'ether')),
             gasPrice: this.web3.utils.toHex(gasPrice),
+            gas: this.web3.utils.toHex(process.env.GAS) || undefined,
             nonce: this.web3.utils.toHex(nonce),
             data: memo
         };

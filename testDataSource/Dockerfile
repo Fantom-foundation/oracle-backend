@@ -2,11 +2,9 @@ FROM node:10.5
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY testDataSource .
 
 RUN npm install
 
-COPY . .
-
 EXPOSE 9991
-CMD [ "node" "./bin/www" ]
+CMD [ "node", "./bin/www" ]

@@ -1,12 +1,22 @@
 FROM node:10.5
 
+ARG CONFIG
+ARG PORT
+ARG TEST_SOURCE_HOST
+ARG ORACLE_HOST
+ARG GAS
+
+ENV TEST_SOURCE_HOST=$TEST_SOURCE_HOST
+ENV ORACLE_HOST=$ORACLE_HOST
+ENV ORACLE_PORT=$PORT
+ENV GAS=$GAS
+
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY oracleApp .
+COPY $CONFIG .
 
 RUN npm install
 
-COPY . .
-
-EXPOSE 9991
-CMD [ "node" "./bin/www" ]
+EXPOSE 3000
+CMD [ "node", "./bin/www" ]

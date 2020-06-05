@@ -1,24 +1,33 @@
 const { abi } = require('./bin/abi');
 const bin = require('./bin/bin');
 const fs = require('fs');
+const accConfig = require('../oracleApp/config');
 
 class IntegrationTests {
     constructor(coinbase, web3, newAccCount, contractAddr) {
         this.coinbase = coinbase;
         this.web3 = web3;
         this.accounts = [];
+        this.newAccConfigs = [];
         this.accCount = newAccCount;
         this.oracleContract = new this.web3.eth.Contract(abi, contractAddr);
     }
 
-    async run() {
+    async test() { }
+
+    async runDeps() {
         await this.createAccs();
         await this.deployOracleContract();
+        await this.saveAccountsConfigs();
     }
 
     async deployOracleContract() {
         console.log("deploy contract");
         await this.deployContract();
+        for (let i = 0; i < this.newAccConfigs.length; i++) {
+            let cfg = this.newAccConfigs[i];
+            cfg.oracleContract.contractAddress = this.oracleContract.options.address.toLowerCase();
+        }
     }
 
     async createAccs() {
@@ -27,16 +36,30 @@ class IntegrationTests {
         const value = "6350000";
         await this.createAccounts(passwd, value);
 
-        // TODO: save to json this accounts
-        fs.writeFile("accounts.json", JSON.stringify(this.accounts), function(err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+        for (let i = 0; i < this.accounts.length; i++) {
+            let acc = this.accounts[i];
+            acc.keystore.address = acc.account.address.toLowerCase();
+            let newAccConfig = Object.assign({}, accConfig);
+            newAccConfig.oracleContract.sender.privateKey = acc.account.privateKey;
+            newAccConfig.oracleContract.sender.keyObject = acc.keystore;
+            this.newAccConfigs.push(newAccConfig);
+        }
+    }
+
+    async saveAccountsConfigs() {
+        for (let i = 0; i < this.newAccConfigs.length; i++) {
+            const cfg = this.newAccConfigs[i];
+            const jsCfg = `const config = ${JSON.stringify(cfg)};\n module.exports = config;`
+            fs.writeFile(`accounts-configs/account-config${i + 1}/config.js`, jsCfg, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
     }
 
     async runTests() {
-        
+
     }
 
     async createAccounts(passwd, value) {
@@ -50,8 +73,14 @@ class IntegrationTests {
                 keystore: keystore,
             });
 
-            let chainId = await this.web3.eth.net.getId();
-            let nonce = await this.web3.eth.getTransactionCount(this.coinbase.address);
+            let chainId = await this.web3.eth.net.getId((err, res) => {
+                if (err)
+                    console.log("getId ERROR:", err);
+            });
+            let nonce = await this.web3.eth.getTransactionCount(this.coinbase.address, (err, res) => {
+                if (err)
+                    console.log("getTransactionCount ERROR:", err);
+            });
             const gasPrice = await this.web3.eth.getGasPrice();
             let rawTx = {
                 from: this.coinbase.address,

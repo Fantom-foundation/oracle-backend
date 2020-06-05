@@ -10,9 +10,7 @@ program
   .option('-h, --host <type>', 'rpc host. if not set localhost is used')
   .option('-p, --port <type>', 'rpc port. if not set 18545 is used')
   .option('-c, --coinbase', 'use coinbase from config')
-  .option('-a, --accounts <type>', 'new accounts count, default - 3')
-  .option('-d, --deploy', 'only contract deploy')
-  .option('-n, --accs', 'only create accounts');
+  .option('-d, --deps', 'only generate accounts and deploy contract');
 
 program.parse(process.argv);
 
@@ -44,10 +42,9 @@ const integrationTests = new IntegrationTests(
   defaultContractAddress,
 );
 
-if (program.accs) {
-  integrationTests.createAccs();
-} else if (program.deploy) {
-  integrationTests.deployOracleContract();
-} else {
-  integrationTests.run();
+if (program.deps) {
+  integrationTests.runDeps();
+  return;
 }
+
+integrationTests.test();

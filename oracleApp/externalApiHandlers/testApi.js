@@ -6,10 +6,11 @@ tokenPrices.set("SYMB1/SYMB2", "10000");
 
 class TestApi {
   constructor(options, ignorePairs, requester) {
-      this.requester = requester;
-      this.name = options.name;
-      this.ignorePairs = ignorePairs;
-      this.apiKey = options.apiKey;
+    this.host = process.env.TEST_SOURCE_HOST || "127.0.0.1";
+    this.requester = requester;
+    this.name = options.name;
+    this.ignorePairs = ignorePairs;
+    this.apiKey = options.apiKey;
   }
 
   updatePrices() {
@@ -17,9 +18,10 @@ class TestApi {
     for (const key of tokenPrices.keys()) {
       tokPairs.push(key);
     }
+    const host = this.host;
     let reqOpts = {
       method: 'GET',
-      uri: 'http://localhost:9991',
+      uri: `http://${host}:9991`,
       body: {
         'pairs': tokPairs.join("")
       },
@@ -27,17 +29,17 @@ class TestApi {
       gzip: true
     };
 
-    if (!this.requester){
+    if (!this.requester) {
       console.log(`TestApi.requester is empty`);
       return;
     }
 
     this.requester(reqOpts)
       .then(function (res) {
-      console.log(res);
-    }).catch(function (err) {
-      console.log(err);
-    });
+        console.log(res);
+      }).catch(function (err) {
+        console.log(err);
+      });
   }
 
   addSymb() {

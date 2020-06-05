@@ -2,4 +2,4 @@
 .vscode/
 node_modules
 .nyc_output
-accounts.json
+accounts-configs
