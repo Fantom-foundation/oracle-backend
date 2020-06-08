@@ -2,7 +2,6 @@ const Web3 = require('web3');
 const commander = require('commander');
 const keythereum = require("keythereum-pure-js");
 const config = require("./config.json");
-const configOracleApp = require('../oracleApp/config');
 const { IntegrationTests } = require('./tests');
 const program = new commander.Command();
 

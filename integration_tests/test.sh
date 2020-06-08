@@ -33,6 +33,10 @@ done
 cd integration_tests
 
 echo "run tests"
+sleep 5
+TESTS=$(node integration-test.js -h $LACHESIS_HOST)
+echo $TESTS
+echo "tests completed"
 
 # echo "stop and remove oracle apps"
 # for ((i=1;i<=$N;i+=1))

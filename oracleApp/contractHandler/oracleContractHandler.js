@@ -7,7 +7,6 @@ const EventsHandler = require('./eventsHandler');
 class ContractHandler {
     constructor(web3) {
         let host = process.env.ORACLE_HOST;
-        console.log("CONTRACT HANDLER ORACLE HOST:", host);
         this.endpointWs = `ws://${(host) ? host : config.oracleContract.defaultHost}:${config.oracleContract.defaultPortWs}`;
         this.endpointRpc = `ws://${(host) ? host : config.oracleContract.defaultHost}:${config.oracleContract.defaultPortRpc}`;
         this.contractAddress = config.oracleContract.contractAddress;
