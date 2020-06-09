@@ -2,4 +2,5 @@
 .vscode/
 node_modules
 .nyc_output
-accounts-configs
+accounts-configs/account-config*/config.js
+accounts-configs/contract.json

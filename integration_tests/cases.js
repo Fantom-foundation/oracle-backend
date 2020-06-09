@@ -12,11 +12,12 @@ class Cases {
     }
 
     async run() {
-        this.cases.forEach(async (testCase) => {
-            console.log("Run test:", testCase.name);
-            await testCase.call();
-            console.log("Finish test:", testCase.name);
-        });
+        for (let index = 0; index < this.cases.length; index++) {
+            this.cases[index];
+            console.log("Run test:", this.cases[index].name, "\n");
+            await this.cases[index].call();
+            console.log("Finish test:", this.cases[index].name, "\n");
+        }
     }
 }
 

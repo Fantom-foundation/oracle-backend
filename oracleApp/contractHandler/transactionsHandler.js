@@ -41,6 +41,7 @@ class TransactionHandler {
         memo = '',
         web3Delegate = '',
         gas = '',
+        nonceInc = false,
         turnLogsOff = false,
     }) {
         const useWeb3 = web3Delegate || this.web3;
@@ -57,6 +58,8 @@ class TransactionHandler {
             nonce: this.web3.utils.toHex(nonce),
             data: memo
         };
+        if (nonceInc)
+            rawTx.nonce++;
         
         let estimatedGas = await this.estimateGas(rawTx);
         rawTx.gasLimit = this.web3.utils.toHex(estimatedGas);

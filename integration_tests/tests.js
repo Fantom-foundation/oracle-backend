@@ -22,27 +22,6 @@ class IntegrationTests {
 
         console.log("Init test cases");
 
-        this.testCases.addCase("prices not updated", async () => {
-            const contractAddress = require('./accounts-configs/contract.json');
-            let oracleContract = new web3.eth.Contract(abi, contractAddress.contractAddress);
-
-            const symb1 = "SYMB1";
-            const symb2 = "SYMB2";
-            let resp = await new Promise(resolve => {
-                oracleContract.methods.getPairPrice(symb1, symb2).call({ from }, (err, result) => {
-                    if (!err) {
-                        resolve(result);
-                    } else {
-                        console.log('getPairPrice err', err);
-                    }
-                });
-            })
-
-            if (resp != "0") {
-                throw Error(`getPairPrice for symb1:${symb1} and symb2:${symb2} returned not empty - result: ${resp}`);
-            }
-        });
-
         this.testCases.addCase("prices updated", async () => {
             const TransactionHandler = require('../oracleApp/contractHandler/transactionsHandler');
             const contractAddress = require('./accounts-configs/contract.json');
@@ -50,6 +29,7 @@ class IntegrationTests {
             let oracleContract = new web3.eth.Contract(abi, contractAddress.contractAddress);
             let txHandler = new TransactionHandler(web3, oracleContract);
 
+            const shouldPrice = "10000";
             const symb1 = "SYMB1";
             const symb2 = "SYMB2";
 
@@ -62,23 +42,12 @@ class IntegrationTests {
                     to: txHandler.contractAddr,
                     value: "0",
                     memo: txHandler.oracle.methods.requestPairUpdate(symb1, symb2).encodeABI(),
-                    gas: 2000000,
+                    gas: 2100000,
+                    nonceInc: true,
                     web3Delegate: web3
                 });
             }
-
-            await sleep(8000);
-
-            let proposePairTxHash = await txHandler.newSignedTx({
-                accountFrom: txHandler.account,
-                to: txHandler.contractAddr,
-                value: "0",
-                memo: txHandler.oracle.methods.proposePriceForPair(symb1, symb2, 1000).encodeABI(),
-                gas: 2000000,
-                web3Delegate: web3
-            });
-
-            await sleep(8000);
+            await sleep(10000);
 
             let resp = await new Promise(resolve => {
                 oracleContract.methods.getPairPrice(symb1, symb2).call({ from }, (err, result) => {
@@ -90,8 +59,8 @@ class IntegrationTests {
                 });
             })
 
-            if (resp == "0") {
-                throw Error(`getPairPrice for symb1:${symb1} and symb2:${symb2} shoult not be empty - result: ${resp}`);
+            if (resp != shouldPrice) {
+                throw Error(`getPairPrice for symb1:${symb1} and symb2:${symb2} should:${shouldPrice} - got: ${resp}`);
             }
         });
 
@@ -123,9 +92,20 @@ class IntegrationTests {
         for (let i = 0; i < this.accounts.length; i++) {
             let acc = this.accounts[i];
             acc.keystore.address = acc.account.address.toLowerCase();
-            let newAccConfig = Object.assign({}, accConfig);
-            newAccConfig.oracleContract.sender.privateKey = acc.account.privateKey;
-            newAccConfig.oracleContract.sender.keyObject = acc.keystore;
+            let newAccConfig = {
+                currencySched: accConfig.currencySched,
+                oracleContract: {
+                    contractAddress: "",
+                    defaultHost: accConfig.oracleContract.defaultHost,
+                    defaultPortRpc: accConfig.oracleContract.defaultPortRpc,
+                    defaultPortWs: accConfig.oracleContract.defaultPortWs,
+                    priceUpdateTimeout: accConfig.oracleContract.priceUpdateTimeout,
+                    sender: {
+                        keyObject: acc.keystore,
+                        privateKey: acc.account.privateKey,
+                    }
+                },
+            };
             newAccConfig.oracleContract.sender.keyObject.privateKey = acc.account.privateKey;
             this.newAccConfigs.push(newAccConfig);
         }
@@ -141,10 +121,6 @@ class IntegrationTests {
                 }
             });
         }
-    }
-
-    async runTests() {
-
     }
 
     async createAccounts(passwd, value) {
@@ -227,7 +203,7 @@ class IntegrationTests {
             })
             .then(function (newContractInstance) {
                 newOracleContract = newContractInstance;
-                console.log("then contract address:", newContractInstance.options.address);
+                console.log("new contract address:", newContractInstance.options.address);
             });
 
         this.oracleContract = newOracleContract;

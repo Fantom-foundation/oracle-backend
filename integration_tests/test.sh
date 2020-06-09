@@ -18,14 +18,13 @@ echo "generation completed"
 echo "start test source"
 cd ../
 TEST_SOURCE_BUILD=$(docker build --network=host -f ./testDataSource/Dockerfile -t "test-source:latest" .)
-TEST_SOURCE=$(docker run -d --name test-source -p 9991:9991 test-source:latest )
+TEST_SOURCE=$(docker run -d --name test-source -p 9991:9991 test-source:latest)
 cd integration_tests
 echo "start test source completed"
 
 echo "run oracle backend apps"
 cd ../
-for ((i=1;i<=$N;i+=1))
-do
+for ((i = 1; i <= 3; i += 1)); do
     echo "run $i oracle backend app"
     APP_BUILD=$(docker build --network=host -f ./oracleApp/Dockerfile --build-arg GAS=$GAS --build-arg ORACLE_HOST=$LACHESIS_HOST --build-arg TEST_SOURCE_HOST=$TEST_SOURCE_HOST --build-arg PORT=300$i --build-arg CONFIG=integration_tests/accounts-configs/account-config$i -t "oracle-app-$i:latest" .)
     APP_RUN=$(docker run -d --name oracle-app-$i -p 300$i:3000 oracle-app-$i)
@@ -38,17 +37,16 @@ TESTS=$(node integration-test.js -h $LACHESIS_HOST)
 echo $TESTS
 echo "tests completed"
 
-# echo "stop and remove oracle apps"
-# for ((i=1;i<=$N;i+=1))
-# do
-#     APP_STOP=$(docker stop oracle-app-$i && docker rm oracle-app-$i || true)
-# done
-# echo "oracle apps removed"
+echo "stop and remove oracle apps"
+for ((i = 1; i <= 3; i += 1)); do
+    APP_STOP=$(docker stop oracle-app-$i && docker rm oracle-app-$i || true)
+done
+echo "oracle apps removed"
 
-# echo "stop and remove node"
-# LACHESIS_STOP=$(docker stop $LACHESIS && docker rm $LACHESIS || true)
-# echo "node removed"
+echo "stop and remove node"
+LACHESIS_STOP=$(docker stop $LACHESIS && docker rm $LACHESIS || true)
+echo "node removed"
 
-# echo "stop test source"
-# TEST_SOURCE_STOP=$(docker stop $TEST_SOURCE && docker rm $TEST_SOURCE || true)
-# echo "test source removed"
+echo "stop test source"
+TEST_SOURCE_STOP=$(docker stop $TEST_SOURCE && docker rm $TEST_SOURCE || true)
+echo "test source removed"
