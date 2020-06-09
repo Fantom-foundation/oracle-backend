@@ -43,6 +43,6 @@ app.use(function(err, req, res, next) {
   res.write(err.toString());
   res.end();
 });
-var oracleContract = new oracleContractHandler();
+var oracleContract = new oracleContractHandler(null);
 scedule(oracleContract);
 module.exports = app;

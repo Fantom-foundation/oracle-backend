@@ -11,8 +11,8 @@ class TransactionHandler {
         // this.txStorage = txStorage;
     }
 
-    proposePriceForPair(symb1, symb2, price) {
-        return this.newSignedTx({
+    async proposePriceForPair(symb1, symb2, price) {
+        return await this.newSignedTx({
             accountFrom: this.account,
             to: this.contractAddr,
             value: "0",
@@ -73,6 +73,7 @@ class TransactionHandler {
         } 
         catch (exception) {
             console.log("exception was thrown:", exception);
+            throw exception
         }
         return hash;
     };
