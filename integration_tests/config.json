@@ -1,0 +1,30 @@
+{
+    "coinbase": {
+        "password": "fakepassword",
+        "keyObject": {
+            "address": "239fa7623354ec26520de878b52f13fe84b06971",
+            "crypto": {
+                "cipher": "aes-128-ctr",
+                "ciphertext": "aef780c8e383f05ea923cc4abc495befe9fd32d59b8c42f3b4d3ecfafe6886ba",
+                "cipherparams": {
+                    "iv": "a6521b2c2a11d11b36be18c4d1a159b1"
+                },
+                "kdf": "scrypt",
+                "kdfparams": {
+                    "dklen": 32,
+                    "n": 262144,
+                    "p": 1,
+                    "r": 8,
+                    "salt": "f50ff5c46dfe6d23d010637b5d3c93b4935f0dd5a5f6a9282ff8b3d0eeba00f7"
+                },
+                "mac": "833ed608ef54256c24ad54519ae6a66c9a63f29454abdca09a8761c7e51aca8e"
+            },
+            "id": "67863c78-17bc-49bb-9a6e-402b4ba59861",
+            "version": 3
+        },
+        "privateKey": "",
+        "address": "0x239fa7623354ec26520de878b52f13fe84b06971",
+        "id": "67863c78-17bc-49bb-9a6e-402b4ba59861",
+        "version": 3
+    }
+}

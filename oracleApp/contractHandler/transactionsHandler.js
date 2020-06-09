@@ -11,8 +11,8 @@ class TransactionHandler {
         // this.txStorage = txStorage;
     }
 
-    proposePriceForPair(symb1, symb2, price) {
-        return this.newSignedTx({
+    async proposePriceForPair(symb1, symb2, price) {
+        return await this.newSignedTx({
             accountFrom: this.account,
             to: this.contractAddr,
             value: "0",
@@ -40,6 +40,8 @@ class TransactionHandler {
         value,
         memo = '',
         web3Delegate = '',
+        gas = '',
+        nonceInc = false,
         turnLogsOff = false,
     }) {
         const useWeb3 = web3Delegate || this.web3;
@@ -52,9 +54,12 @@ class TransactionHandler {
             to,
             value: this.web3.utils.toHex(this.web3.utils.toWei(value, 'ether')),
             gasPrice: this.web3.utils.toHex(gasPrice),
+            gas: this.web3.utils.toHex(process.env.GAS) || this.web3.utils.toHex(gas) || undefined,
             nonce: this.web3.utils.toHex(nonce),
             data: memo
         };
+        if (nonceInc)
+            rawTx.nonce++;
         
         let estimatedGas = await this.estimateGas(rawTx);
         rawTx.gasLimit = this.web3.utils.toHex(estimatedGas);
@@ -73,6 +78,7 @@ class TransactionHandler {
         } 
         catch (exception) {
             console.log("exception was thrown:", exception);
+            throw exception
         }
         return hash;
     };

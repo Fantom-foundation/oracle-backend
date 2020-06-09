@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+node_modules
+.nyc_output
+accounts-configs/account-config*/config.js
+accounts-configs/contract.json
