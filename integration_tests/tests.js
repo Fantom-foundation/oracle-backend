@@ -3,6 +3,7 @@ const bin = require('./bin/bin');
 const fs = require('fs');
 const accConfig = require('../oracleApp/config');
 const Cases = require('./cases');
+const itCases = require('./integrationCases');
 
 class IntegrationTests {
     constructor(coinbase, web3, newAccCount, contractAddr) {
@@ -22,55 +23,20 @@ class IntegrationTests {
 
         console.log("Init test cases");
 
-        this.testCases.addCase("prices updated", async () => {
-            const TransactionHandler = require('../oracleApp/contractHandler/transactionsHandler');
-            const contractAddress = require('./accounts-configs/contract.json');
-
-            let oracleContract = new web3.eth.Contract(abi, contractAddress.contractAddress);
-            let txHandler = new TransactionHandler(web3, oracleContract);
-
-            const shouldPrice = "10000";
-            const symb1 = "SYMB1";
-            const symb2 = "SYMB2";
-
-            for (let index = 1; index <= 3; index++) {
-                let accConfig = require(`./accounts-configs/account-config${index}/config`);
-                txHandler.account = accConfig.oracleContract.sender.keyObject;
-
-                let pairUpdateTxHash = await txHandler.newSignedTx({
-                    accountFrom: txHandler.account,
-                    to: txHandler.contractAddr,
-                    value: "0",
-                    memo: txHandler.oracle.methods.requestPairUpdate(symb1, symb2).encodeABI(),
-                    gas: 2100000,
-                    nonceInc: true,
-                    web3Delegate: web3
-                });
-            }
-            await sleep(10000);
-
-            let resp = await new Promise(resolve => {
-                oracleContract.methods.getPairPrice(symb1, symb2).call({ from }, (err, result) => {
-                    if (!err) {
-                        resolve(result);
-                    } else {
-                        console.log('getPairPrice err', err);
-                    }
-                });
-            })
-
-            if (resp != shouldPrice) {
-                throw Error(`getPairPrice for symb1:${symb1} and symb2:${symb2} should:${shouldPrice} - got: ${resp}`);
-            }
-        });
+        this.testCases.addCase("prices updated", itCases.testPricesUpdated);
+        this.testCases.addCase("prices updated", itCases.validTestPricesUpdated);
+        this.testCases.addCase("prices updated", itCases.validTestPricesUpdated);
 
         console.log("Start tests");
         await this.testCases.run();
     }
 
     async runDeps() {
+        console.log("prepare to run deps");
         await this.createAccs();
+        console.log("accs created");
         await this.deployOracleContract();
+        console.log("oracle deployed");
         await this.saveAccountsConfigs();
     }
 

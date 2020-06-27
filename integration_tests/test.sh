@@ -4,6 +4,10 @@ cd $(dirname $0)
 
 set -e
 
+mkdir accounts-configs
+mkdir accounts-configs/account-config1
+mkdir accounts-configs/account-config2
+mkdir accounts-configs/account-config3
 echo "Up lachesis node"
 LACHESIS=$(docker run -d --name lachesis-node -v /home/$USER/lachesis:/root -p 5050:5050 -p 18545:18545 -p 18546:18546 "lachesis" --fakenet=1/1 -port=5050 --rpc --rpcaddr 0.0.0.0 --rpcvhosts="*" --rpccorsdomain="*" --rpcapi="eth,debug,admin,web3,personal,net,txpool,ftm,sfc" --ws --wsaddr 0.0.0.0 --wsorigins="*" --wsapi="eth,debug,admin,web3,personal,net,txpool,ftm,sfc" --nocheckversion --nousb)
 echo $LACHESIS
@@ -11,6 +15,8 @@ echo "Lachesis node started"
 
 echo "generate accounts and deploy contract"
 sleep 5
+echo "prepare to run integration tests at host: " + $LACHESIS_HOST
+read -p "Press any key to continue... " -n1 -s
 GENERATE_DEPS=$(node integration-test.js -h $LACHESIS_HOST -d)
 echo $GENERATE_DEPS
 echo "generation completed"

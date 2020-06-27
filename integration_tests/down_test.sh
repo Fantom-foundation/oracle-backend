@@ -4,6 +4,8 @@ cd $(dirname $0)
 
 set -e
 
+rm -rf accounts-configs
+
 echo "stop and remove oracle apps"
 for ((i = 1; i <= 3; i += 1)); do
     APP_STOP=$(docker stop oracle-app-$i && docker rm oracle-app-$i || true)
